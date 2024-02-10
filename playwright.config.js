@@ -6,7 +6,7 @@ module.exports = {
   browsers: ['chromium', 'firefox', 'webkit'],
 
   // Папка, где находятся тесты
-  testDir: 'src/tests',
+  testDir: 'tests',
 
   // Список устройств, доступных для эмуляции
   // Полный список устройств доступен здесь: https://playwright.dev/docs/emulation
