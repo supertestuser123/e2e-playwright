@@ -2,9 +2,18 @@
 
 1) Install Playwright
 
-# npx install playwright
+```bash
+npx install playwright
+```
 
+2) Install allure-jest
 
-2) Run tests
+```bash
+npm add -D allure-jest allure-js-commons
+```
 
-# npx playwright test
+3) Run tests
+
+```bash
+npx playwright test
+```
