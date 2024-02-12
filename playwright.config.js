@@ -10,7 +10,16 @@ module.exports = {
       incognito: true
     }
   },
-
+  reporter: [
+    ['line'],
+    [
+      'allure-playwright',
+      {
+        detail: true,
+        suiteTitle: false,
+      },
+    ],
+  ],
   beforeAll: async () => {
    
   },
