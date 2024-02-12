@@ -5,7 +5,7 @@ module.exports = {
   testDir: 'tests',
   use: {
     headless: false,
-    slowMo: 5000,
+    slowMo: 50,
     contextOptions: {
       incognito: true
     }
