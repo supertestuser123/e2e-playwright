@@ -1,5 +1,5 @@
 import { type Page } from '@playwright/test';
-import { locators, auth_url } from '../../helpers/constants/auth.ts';
+import { locators, auth_url } from '../../helpers/constants/auth';
 import { step } from '../../helpers/decorators/allure';
 
 type Locator = string;
