@@ -8,4 +8,4 @@ export const locators = {
 export const auth_url = 'https://id-stage.samoletgroup.ru/accounts/login/'
 export const stage_url = 'https://splan-stage.samoletgroup.ru'
 export const prod_url = 'https://splan-stage.samoletgroup.ru'
-export const path = 'helpers/session.json'
+export const USER_SESSION = 'helpers/session.json'

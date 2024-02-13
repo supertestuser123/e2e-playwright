@@ -10,22 +10,26 @@ type Locator = string;
 export class ProdPage {
   readonly page: Page;
   readonly layout: Locator;
-  readonly pp_link: Locator
+  readonly prodplan_link: Locator
   readonly uploadField: Locator
 
   constructor(page: Page) {
     this.page = page;
     this.uploadField = locators.uploadField
+    this.prodplan_link = locators.prodplan_link
   }
 
   @step('Открыть стартовую страницу')
   async open() {
     await this.page.goto(base_url);
-    
     const currentUrl = this.page.url();
     const currentTitle = await this.page.title();
-    
     expect(currentTitle).toBe('S.Plan');
+  }
+
+  @step('Перейти на страницу Производственного плана')
+  async navigateToProdPlan() {
+    await this.page.locator(this.prodplan_link).click()
   }
 
   @step('Пользователь загружает файлы')
@@ -34,7 +38,7 @@ export class ProdPage {
   
       for (const file_path of files) {
           await this.uploadFile(file_path);
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          await new Promise(resolve => setTimeout(resolve, 2000));
       }
   }
   

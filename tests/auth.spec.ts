@@ -1,12 +1,11 @@
 import { test } from '@playwright/test';
 import { AuthPage } from '../fixtures/pages/AuthPage';
 import { user } from '../helpers/constants/user';
-import { path } from '../helpers/constants/auth';
+import { USER_SESSION } from '../helpers/constants/auth';
 
 test('Авторизация', async ({ page }) => {
   const authpage = new AuthPage(page);
   await authpage.open();
   await authpage.submitForm(user.username, user.password);
-  await authpage.goToStage();
-  await authpage.saveSession(page, path)
+  await authpage.saveSession(page, USER_SESSION)
 })
