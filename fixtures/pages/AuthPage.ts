@@ -1,5 +1,5 @@
 import { type Page } from '@playwright/test';
-import { locators, auth_url } from '../../helpers/constants/auth';
+import { locators, auth_url, stage_url } from '../../helpers/constants/auth';
 import { step } from '../../helpers/decorators/allure';
 
 type Locator = string;
@@ -11,12 +11,14 @@ export class AuthPage {
   readonly loginButton: Locator;
   readonly pplink: Locator
   readonly base_url: String
+  readonly showcase: Locator
 
   constructor(page: Page) {
     this.page = page;
     this.username = locators.username;
     this.password = locators.password;
     this.loginButton = locators.loginButton;
+    this.showcase = locators.showcase;
   }
 
   @step('Открыть страницу авторизации')
@@ -39,7 +41,6 @@ export class AuthPage {
   @step('Нажать на кнопку Войти')
   async clickButton() {
     await this.page.click(locators.loginButton);
-    
   }
 
   @step('Полностью заполнить форму $0 : $1')
@@ -47,6 +48,13 @@ export class AuthPage {
     await this.fillUsername(username);
     await this.fillPassword(password);
     await this.clickButton();
+    await this.page.waitForSelector(this.showcase);
+    
+  }
+
+  @step('Получить сессию со стенда')
+  async goToStage() {
+    await this.page.goto(stage_url);
   }
 
   async  saveSession(page: Page, filePath: string): Promise<void> {

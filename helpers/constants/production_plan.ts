@@ -1,9 +1,8 @@
 export const locators = {
 
-layout: 'data-testid="test-id-layout"',
-pp_link: "//a[contains(@href,'production-plan') and contains(text(),'Производственный план')]"
+uploadField: '//*[@data-testid="test-id-upload-files"]//input[@type="file"]'
 
 };
 
-
-export const base_url = 'https://splan-stage.samoletgroup.ru'
+export const filesDirectory: string = './data/files';
+export const base_url = 'https://splan-stage.samoletgroup.ru/production-plan'

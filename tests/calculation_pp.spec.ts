@@ -7,7 +7,7 @@ test.use({ storageState: path });
 test('Расчет производственного плана', async ({ page }) => {
   const prodpage = new ProdPage(page);
   await prodpage.open();
-  await prodpage.navigateToPlan();
+  await prodpage.loadFiles();
 
   
 })

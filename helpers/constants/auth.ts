@@ -2,8 +2,10 @@ export const locators = {
   username: '[name=username]',
   password: '[name=password]',
   loginButton: '[name=loginButton]',
+  showcase: '[data-menu-list="true"]'
 };
 
 export const auth_url = 'https://id-stage.samoletgroup.ru/accounts/login/'
-
+export const stage_url = 'https://splan-stage.samoletgroup.ru'
+export const prod_url = 'https://splan-stage.samoletgroup.ru'
 export const path = 'helpers/session.json'

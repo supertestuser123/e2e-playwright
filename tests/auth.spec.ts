@@ -7,5 +7,6 @@ test('Авторизация', async ({ page }) => {
   const authpage = new AuthPage(page);
   await authpage.open();
   await authpage.submitForm(user.username, user.password);
+  await authpage.goToStage();
   await authpage.saveSession(page, path)
 })
