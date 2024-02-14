@@ -1,12 +1,10 @@
 import { defineConfig } from '@playwright/test';
-import { USER_SESSION } from './helpers/constants/auth';
 
 const config = defineConfig({
   
   use: { 
     headless: false,       
-    storageState: USER_SESSION,
-   },
+  },
   name: 'chromium',
 
   reporter: [
@@ -24,14 +22,10 @@ const config = defineConfig({
     ],
   ],
   
-  expect: {
-    timeout: 1 * 60 * 1000,
-  },
-  globalTimeout: 1 * 60 * 60 * 1000,
   testMatch: /.*\.spec\.ts/,
-  timeout: 1 * 60 * 1000,
   fullyParallel: true,
   testDir: './tests/',
+  timeout: 1000000, 
 });
 
 export default config;

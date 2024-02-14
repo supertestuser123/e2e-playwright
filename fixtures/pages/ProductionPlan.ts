@@ -10,26 +10,36 @@ type Locator = string;
 export class ProdPage {
   readonly page: Page;
   readonly layout: Locator;
-  readonly prodplan_link: Locator
+  readonly prodplanLink: Locator
   readonly uploadField: Locator
+  readonly calculateButton: Locator
+  readonly downloadButton: Locator
+  readonly modalUploadWindow: Locator
+  readonly modalDownloadWindow: Locator
 
   constructor(page: Page) {
     this.page = page;
     this.uploadField = locators.uploadField
-    this.prodplan_link = locators.prodplan_link
+    this.prodplanLink = locators.prodplanLink
+    this.calculateButton = locators.calculateButton
+    this.downloadButton = locators.downloadButton
+    this.modalUploadWindow = locators.modalUploadWindow
+    this.modalDownloadWindow = locators.modalDownloadWindow
   }
 
   @step('Открыть стартовую страницу')
   async open() {
     await this.page.goto(base_url);
-    const currentUrl = this.page.url();
     const currentTitle = await this.page.title();
     expect(currentTitle).toBe('S.Plan');
   }
 
   @step('Перейти на страницу Производственного плана')
   async navigateToProdPlan() {
-    await this.page.locator(this.prodplan_link).click()
+    await this.page.locator(this.prodplanLink).click()
+    const currentUrl = this.page.url();
+    expect(currentUrl).toBe(base_url);
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
 
   @step('Пользователь загружает файлы')
@@ -38,15 +48,49 @@ export class ProdPage {
   
       for (const file_path of files) {
           await this.uploadFile(file_path);
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise(resolve => setTimeout(resolve, 1000));
       }
   }
-  
   async uploadFile(file_path: string) {
-      const inputFile = await this.page.$(this.uploadField);
-      if (inputFile) {
-          await inputFile.setInputFiles(file_path);
-          await this.page.waitForLoadState('networkidle');
-      }
-    
-}}
+    const inputFile = await this.page.$(this.uploadField);
+    if (inputFile) {
+        await inputFile.setInputFiles(file_path);
+        await this.page.waitForLoadState('networkidle');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+
+  @step('Пользователь нажимает кнопку Запустить расчет')
+  async clickToCalculate() {
+    await this.page.locator(this.calculateButton).click()
+    await expect(this.page.locator(this.modalUploadWindow)).toBeVisible({timeout: 10000})
+  }
+
+  @step('Пользователь нажимает кнопку Скачать')
+  async clickToDownloadFiles() {
+    await this.page.waitForSelector(this.modalDownloadWindow);
+    await this.page.locator(this.downloadButton).click()
+  }
+
+  @step('Открытие главной страницы Производственного плана')
+  async openProdPlan() {
+    await this.open()
+    await this.navigateToProdPlan()
+  }
+
+  @step('Загрузка файлов')
+  async uploadFiles() {
+    await this.loadFiles()
+  }
+
+  @step('Запуск расчета Производственного плана')
+  async calculateProdPlan() {
+    await this.clickToCalculate()
+  }
+
+  @step('Скачивание файлов перерасчета')
+  async downloadFiles() {
+    await this.clickToDownloadFiles()
+  }
+
+}
