@@ -1,9 +1,9 @@
 export const locators = {
 
 uploadField: '//*[@data-testid="test-id-upload-files"]//input[@type="file"]',
-prodplanLink: '//a[contains(@href,"production-plan") and contains(text(),"Производственный план")]',
-calculateButton: '//button[@data-testid="tend-ui-button" and contains(text(), "Запустить перерасчет")]',
-downloadButton: '//div[@class="tend-ui-modal-content"]//div[@class="tend-ui-modal-footer"]//button[@data-testid="tend-ui-button" and text()="Скачать"]',
+prodplanLink: '//*[@data-testid="test-id-menu-item-product-plan"]',
+calculateButton: '//button[@data-testid="test-id-button-start-recalculate"]',
+downloadButton: '//button[@data-testid="test-id-button-download-recalculate"]',
 modalUploadWindow: '//*[text()="Перерасчет запущен"]',
 modalDownloadWindow: '//*[text()="Перерасчет завершен"]'
 
