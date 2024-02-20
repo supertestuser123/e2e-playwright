@@ -39,26 +39,41 @@ export class ProdPage {
     await this.page.locator(this.prodplanLink).click()
     const currentUrl = this.page.url();
     expect(currentUrl).toBe(base_url);
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
-  @step('Пользователь загружает файлы')
-  async loadFiles() {
-      const files = fs.readdirSync(filesDirectory).map(file => `${filesDirectory}/${file}`);
-  
-      for (const file_path of files) {
-          await this.uploadFile(file_path);
-          await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-  }
-  async uploadFile(file_path: string) {
-    const inputFile = await this.page.$(this.uploadField);
-    if (inputFile) {
-        await inputFile.setInputFiles(file_path);
-        await this.page.waitForLoadState('networkidle');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+@step('Пользователь загружает файлы')
+async loadFiles() {
+    const files = fs.readdirSync(filesDirectory).map(file => `${filesDirectory}/${file}`);
+      
+    let filesUploaded = 0;
+    for (let i = 0; i < 7; i++) {
+        const file_path = files[i];
+        if (file_path) {
+            console.log(`Загружается файл: ${file_path}`);
+            await this.uploadFile(file_path);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            filesUploaded++;
+        } else {
+            throw new Error('Недостаточно файлов для загрузки');
+        }
     }
-  }
+    if (filesUploaded < 7) {
+        throw new Error('Не все файлы были загружены');
+    }
+    
+}
+
+async uploadFile(file_path: string) { 
+  const inputFile = await this.page.$(this.uploadField);
+  if (inputFile) {
+      await inputFile.setInputFiles(file_path);
+      await Promise.all([
+          this.page.waitForLoadState('load'),
+          this.page.waitForResponse(response => response.status() === 200)
+      ]);
+   }
+}
 
   @step('Пользователь нажимает кнопку Запустить расчет')
   async clickToCalculate() {
