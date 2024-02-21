@@ -47,11 +47,11 @@ async loadFiles() {
     const files = fs.readdirSync(filesDirectory).map(file => `${filesDirectory}/${file}`);
       
     let filesUploaded = 0;
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < files.length; i++) {
         const file_path = files[i];
         if (file_path) {
-            console.log(`Загружается файл: ${file_path}`);
             await this.uploadFile(file_path);
+            console.log(`Загружается файл: ${file_path}`);
             await new Promise(resolve => setTimeout(resolve, 2000));
             filesUploaded++;
         } else {
