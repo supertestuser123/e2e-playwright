@@ -11,14 +11,12 @@ export class AuthPage {
   readonly loginButton: Locator;
   readonly pplink: Locator
   readonly base_url: String
-  readonly showcase: Locator
-
+  
   constructor(page: Page) {
     this.page = page;
     this.username = locators.username;
     this.password = locators.password;
     this.loginButton = locators.loginButton;
-    this.showcase = locators.showcase;
   }
 
   @step('Открыть страницу авторизации')
