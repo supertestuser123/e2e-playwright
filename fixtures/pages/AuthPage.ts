@@ -47,6 +47,7 @@ export class AuthPage {
     await this.fillPassword(password);
     await this.clickButton();   
   }
+  
   async  saveSession(page: Page, filePath: string): Promise<void> {
     const contextState = await page.context().storageState();
     const file = require('fs').promises;

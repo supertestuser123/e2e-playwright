@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
-import { AuthPage } from '../fixtures/pages/AuthPage';
-import { user } from '../helpers/constants/user';
-import { USER_SESSION } from '../helpers/constants/auth';
+import { AuthPage } from '../../fixtures/pages/AuthPage';
+import { user } from '../../helpers/constants/user';
+import { USER_SESSION } from '../../helpers/constants/auth';
 
 test('Авторизация', async ({ page }) => {
   const authpage = new AuthPage(page);

@@ -5,7 +5,8 @@ prodplanLink: '//*[@data-testid="test-id-menu-item-product-plan"]',
 calculateButton: '//button[@data-testid="test-id-button-start-recalculate"]',
 downloadButton: '//button[@data-testid="test-id-button-download-recalculate"]',
 modalUploadWindow: '//*[text()="Перерасчет запущен"]',
-modalDownloadWindow: '//*[text()="Перерасчет завершен"]'
+modalDownloadWindow: '//*[text()="Перерасчет завершен"]',
+downloadPreviousPlanButton: '//*[@data-testid="test-id-button-download-previous-recalculate"]',
 
 };
 

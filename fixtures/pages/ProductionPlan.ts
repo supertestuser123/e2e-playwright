@@ -16,6 +16,8 @@ export class ProdPage {
   readonly downloadButton: Locator
   readonly modalUploadWindow: Locator
   readonly modalDownloadWindow: Locator
+  readonly downloadPreviousPlanButton: Locator
+
 
   constructor(page: Page) {
     this.page = page;
@@ -25,6 +27,8 @@ export class ProdPage {
     this.downloadButton = locators.downloadButton
     this.modalUploadWindow = locators.modalUploadWindow
     this.modalDownloadWindow = locators.modalDownloadWindow
+    this.downloadPreviousPlanButton = locators.downloadPreviousPlanButton
+
   }
 
   @step('Открыть стартовую страницу')
@@ -79,6 +83,11 @@ async uploadFile(file_path: string) {
   async clickToCalculate() {
     await this.page.locator(this.calculateButton).click()
     await expect(this.page.locator(this.modalUploadWindow)).toBeVisible({timeout: 10000})
+  }
+
+  @step('Пользователь нажимает кнопку Скачать предыдущий расчет')
+  async clickToDownloadPreviousPlan() {
+    await this.page.locator(this.downloadPreviousPlanButton).click()
   }
 
   @step('Пользователь нажимает кнопку Скачать')
