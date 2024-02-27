@@ -35,6 +35,7 @@ const config = defineConfig({
   fullyParallel: true,
   testDir: './tests/',
   timeout: 1000000, 
+  workers: 1
   
 });
 

@@ -1,6 +1,6 @@
 import { type Page } from '@playwright/test';
 import * as fs from 'fs'
-import { base_url, filesDirectory, locators } from '../../helpers/constants/production_plan';
+import { base_url, filesDirectory, locators, refreshFileName } from '../../helpers/constants/production_plan';
 import { step } from '../../helpers/decorators/allure';
 import { expect } from '@playwright/test';
 
@@ -20,6 +20,8 @@ export class ProdPage {
   readonly dropdown: Locator
   readonly blackListFile: Locator
   readonly blackListDownloadButton: Locator
+  readonly blackListRefreshButton: Locator
+  readonly blackListRefreshToastSuccess: Locator
 
   
 
@@ -35,8 +37,63 @@ export class ProdPage {
     this.dropdown = locators.dropdown
     this.blackListFile = locators.blackListFile
     this.blackListDownloadButton = locators.blackListDownloadButton
+    this.blackListRefreshButton = locators.blackListRefreshButton
+    this.blackListRefreshToastSuccess = locators.blackListRefreshToastSuccess
 
   }
+
+  @step('Открытие главной страницы Производственного плана')
+  async openProdPlan() {
+    await this.open()
+    await this.navigateToProdPlan()
+  }
+
+  @step('Загрузка файлов')
+  async uploadFiles() {
+    await this.loadFiles()
+  }
+
+  @step('Запуск расчета Производственного плана')
+  async calculateProdPlan() {
+    await this.clickToCalculate()
+  }
+
+  @step('Скачивание файлов перерасчета')
+  async downloadFiles() {
+    await this.clickToDownloadFiles()
+  } 
+
+  @step('Пользователь скачивает файл Стоп-лист')
+  async downloadBlackListFile() {
+    await this.clickToDropdown()
+    await this.hoverToFile()
+    await this.downloadBlackList()
+  }
+
+  @step('Пользователь обновление файла Стоп-лист')
+  async refreshBlackListFile() {
+    await this.clickToDropdown()
+    await this.hoverToFile()
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    await this.refreshBlackList()
+  }
+
+  @step('Пользователь раскрывает Дропдаун')
+  async clickToDropdown() {
+    await this.page.locator(this.dropdown).click()
+  } 
+
+  @step('Пользователь делает ховер на строку Стоп-лист')
+  async hoverToFile() {
+    await this.page.locator(this.blackListFile).hover()
+  } 
+
+  @step('Пользователь нажимает на кнопку Скачать файл Стоп-листа')
+  async downloadBlackList() {
+    const downloadPromise = this.page.waitForEvent('download');
+    await this.page.locator(this.blackListDownloadButton).click()
+    await downloadPromise;
+  } 
 
   @step('Открыть стартовую страницу')
   async open() {
@@ -53,8 +110,8 @@ export class ProdPage {
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
-@step('Пользователь загружает файлы')
-async loadFiles() {
+  @step('Пользователь загружает файлы')
+  async loadFiles() {
     const files = fs.readdirSync(filesDirectory).map(file => `${filesDirectory}/${file}`);
       
     let filesUploaded = 0;
@@ -72,10 +129,9 @@ async loadFiles() {
     if (filesUploaded < 7) {
         throw new Error('Не все файлы были загружены');
     }
-    
 }
 
-async uploadFile(file_path: string) { 
+  async uploadFile(file_path: string) { 
   const inputFile = await this.page.$(this.uploadField);
   if (inputFile) {
       await inputFile.setInputFiles(file_path);
@@ -102,49 +158,21 @@ async uploadFile(file_path: string) {
     await this.page.waitForSelector(this.modalDownloadWindow);
     await this.page.locator(this.downloadButton).click()
   }
-
-  @step('Открытие главной страницы Производственного плана')
-  async openProdPlan() {
-    await this.open()
-    await this.navigateToProdPlan()
-  }
-
-  @step('Загрузка файлов')
-  async uploadFiles() {
-    await this.loadFiles()
-  }
-
-  @step('Запуск расчета Производственного плана')
-  async calculateProdPlan() {
-    await this.clickToCalculate()
-  }
-
-  @step('Скачивание файлов перерасчета')
-  async downloadFiles() {
-    await this.clickToDownloadFiles()
-  } 
-
-  @step('Пользователь раскрывает Дропдаун')
-  async clickToDropdown() {
-    await this.page.locator(this.dropdown).click()
-  } 
-
-  @step('Пользователь делает ховер на строку Стоп-лист')
-  async hoverToFile() {
-    await this.page.locator(this.blackListFile).hover()
-  } 
-
-  @step('Пользователь нажимает на кнопку Скачать файл Стоп-листа')
-  async downloadBlackList() {
-    const downloadPromise = this.page.waitForEvent('download');
-    await this.page.locator(this.blackListDownloadButton).click()
-    await downloadPromise;
-  } 
-
-  @step('Пользователь скачивает файл Стоп-лист')
-  async downloadBlackListFile() {
-    await this.clickToDropdown()
-    await this.hoverToFile()
-    await this.downloadBlackList()
+  
+  @step('Пользователь обновляет файл Стоп-лист')
+  async refreshBlackList() {
+    const files = fs.readdirSync(filesDirectory)
+    const refreshFilePath = files.find(file => file === refreshFileName);
+    const fullFilePath: string = `${filesDirectory}/${refreshFilePath}`;
+    const inputFile = await this.page.$(this.blackListRefreshButton);
+    
+    if (inputFile) {
+        await inputFile.setInputFiles(fullFilePath);
+        await Promise.all([
+            this.page.waitForLoadState('load'),
+            this.page.waitForResponse(response => response.status() === 200)
+        ]);
+    }
+    await expect(this.page.locator(this.blackListRefreshToastSuccess)).toBeVisible({timeout: 10000})
   }
 }
