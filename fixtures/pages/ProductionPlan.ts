@@ -17,7 +17,11 @@ export class ProdPage {
   readonly modalUploadWindow: Locator
   readonly modalDownloadWindow: Locator
   readonly downloadPreviousPlanButton: Locator
+  readonly dropdown: Locator
+  readonly blackListFile: Locator
+  readonly blackListDownloadButton: Locator
 
+  
 
   constructor(page: Page) {
     this.page = page;
@@ -28,6 +32,9 @@ export class ProdPage {
     this.modalUploadWindow = locators.modalUploadWindow
     this.modalDownloadWindow = locators.modalDownloadWindow
     this.downloadPreviousPlanButton = locators.downloadPreviousPlanButton
+    this.dropdown = locators.dropdown
+    this.blackListFile = locators.blackListFile
+    this.blackListDownloadButton = locators.blackListDownloadButton
 
   }
 
@@ -115,6 +122,29 @@ async uploadFile(file_path: string) {
   @step('Скачивание файлов перерасчета')
   async downloadFiles() {
     await this.clickToDownloadFiles()
-  }
+  } 
 
+  @step('Пользователь раскрывает Дропдаун')
+  async clickToDropdown() {
+    await this.page.locator(this.dropdown).click()
+  } 
+
+  @step('Пользователь делает ховер на строку Стоп-лист')
+  async hoverToFile() {
+    await this.page.locator(this.blackListFile).hover()
+  } 
+
+  @step('Пользователь нажимает на кнопку Скачать файл Стоп-листа')
+  async downloadBlackList() {
+    const downloadPromise = this.page.waitForEvent('download');
+    await this.page.locator(this.blackListDownloadButton).click()
+    await downloadPromise;
+  } 
+
+  @step('Пользователь скачивает файл Стоп-лист')
+  async downloadBlackListFile() {
+    await this.clickToDropdown()
+    await this.hoverToFile()
+    await this.downloadBlackList()
+  }
 }

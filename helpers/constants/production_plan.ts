@@ -7,7 +7,9 @@ downloadButton: '//button[@data-testid="test-id-button-download-recalculate"]',
 modalUploadWindow: '//*[text()="Перерасчет запущен"]',
 modalDownloadWindow: '//*[text()="Перерасчет завершен"]',
 downloadPreviousPlanButton: '//*[@data-testid="test-id-button-download-previous-recalculate"]',
-
+dropdown: '//*[@data-testid="test-id-dropdown"]',
+blackListFile: '//*[@data-testid="test-id-file-menu-item-BLACK_LIST"]',
+blackListDownloadButton: '//div[@data-testid="test-id-file-menu-item-BLACK_LIST"]//span[@data-testid="tend-ui-download-icon"]',
 };
 
 export const filesDirectory: string = './data/files';
