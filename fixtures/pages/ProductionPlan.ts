@@ -90,9 +90,8 @@ export class ProdPage {
 
   @step('Пользователь нажимает на кнопку Скачать файл Стоп-листа')
   async downloadBlackList() {
-    const downloadPromise = this.page.waitForEvent('download');
     await this.page.locator(this.blackListDownloadButton).click()
-    await downloadPromise;
+    await this.page.waitForEvent('download');
   } 
 
   @step('Открыть стартовую страницу')
@@ -151,6 +150,7 @@ export class ProdPage {
   @step('Пользователь нажимает кнопку Скачать предыдущий расчет')
   async clickToDownloadPreviousPlan() {
     await this.page.locator(this.downloadPreviousPlanButton).click()
+    await this.page.waitForEvent('download');
   }
 
   @step('Пользователь нажимает кнопку Скачать')
