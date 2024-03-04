@@ -61,6 +61,7 @@ export class ProdPage {
   @step('Скачивание файлов перерасчета')
   async downloadFiles() {
     await this.clickToDownloadFiles()
+    await this.page.waitForEvent('download');
   } 
 
   @step('Пользователь скачивает файл Стоп-лист')

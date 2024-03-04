@@ -16,4 +16,4 @@ blackListRefreshToastSuccess: '//*[text()="Стоп лист обновлен"]'
 
 export const refreshFileName: string = 'Стоп-лист.xlsx';
 export const filesDirectory: string = './data/files';
-export const base_url = 'https://splan-stage.samoletgroup.ru/production-plan'
+export const base_url = 'https://splan-stage.samoletgroup.ru/production-plan/old-production-plan'
