@@ -1,6 +1,6 @@
 import { type Page } from '@playwright/test';
 import * as fs from 'fs'
-import { base_url, GoodFilesDirectory, locators, refreshFileName } from '../../helpers/constants/production_plan';
+import { base_url, GoodFilesDirectory, ErrorFilesDirectory, locators, refreshFileName } from '../../helpers/constants/production_plan';
 import { step } from '../../helpers/decorators/allure';
 import { expect } from '@playwright/test';
 
@@ -23,6 +23,11 @@ export class ProdPage {
   readonly blackListRefreshButton: Locator
   readonly blackListRefreshToastSuccess: Locator
   readonly notAllFilesToastFail: Locator
+  readonly errorModalWindow: Locator
+  readonly errorOKButton: Locator
+  readonly errorNetworkWindow: Locator
+  readonly errorNetworkTryAgainButton: Locator
+  
 
   
 
@@ -41,6 +46,10 @@ export class ProdPage {
     this.blackListRefreshButton = locators.blackListRefreshButton
     this.blackListRefreshToastSuccess = locators.blackListRefreshToastSuccess
     this.notAllFilesToastFail = locators.notAllFilesToastFail
+    this.errorModalWindow = locators.errorModalWindow
+    this.errorOKButton = locators.errorOKButton
+    this.errorNetworkWindow = locators.errorNetworkWindow
+    this.errorNetworkTryAgainButton = locators.errorNetworkTryAgainButton
 
   }
 
@@ -60,6 +69,11 @@ export class ProdPage {
     await this.loadNotAllFiles()
   }
 
+  @step('Загрузка ошибочных файлов')
+  async uploadErrorFiles() {
+    await this.loadErrorFiles()
+  }
+
   @step('Запуск расчета Производственного плана')
   async calculateProdPlan() {
     await this.clickToCalculate()
@@ -69,8 +83,18 @@ export class ProdPage {
   async downloadFiles() {
     await expect(this.page.locator(this.modalUploadWindow)).toBeVisible({timeout: 10000})
     await this.clickToDownloadFiles()
-    await this.page.waitForEvent('download');
+    
   } 
+
+  @step('Пользователь теряет интернет-соединение')
+  async errorNetwork() {
+    await expect(this.page.locator(this.modalUploadWindow)).toBeVisible({timeout: 10000})
+    await this.page.context().setOffline(true);
+    await expect(this.page.locator(this.errorNetworkWindow)).toBeVisible({timeout: 10000})
+    await this.page.context().setOffline(false);
+    await this.page.locator(this.errorNetworkTryAgainButton).click()
+    await expect(this.page.locator(this.modalUploadWindow)).toBeVisible({timeout: 10000})
+  }
 
   @step('Пользователь скачивает файл Стоп-лист')
   async downloadBlackListFile() {
@@ -83,6 +107,14 @@ export class ProdPage {
   async checkNotAllFilesToast() {
     await this.page.waitForSelector(this.notAllFilesToastFail);
     await expect(this.page.locator(this.notAllFilesToastFail)).toBeVisible({timeout: 10000})
+    
+  }
+
+  @step('Пользователь получает модальное окно с ошибкой"')
+  async getErrorModalWindow() {
+    await expect(this.page.locator(this.errorModalWindow)).toBeVisible({timeout: 10000})
+    await expect(this.page.locator(this.errorOKButton)).toBeVisible({timeout: 10000})
+    await this.page.locator(this.errorOKButton).click()
   }
 
   @step('Пользователь обновление файла Стоп-лист')
@@ -114,7 +146,7 @@ export class ProdPage {
     await this.page.goto(base_url);
     const currentTitle = await this.page.title();
     expect(currentTitle).toBe('S.Plan');
-    await this.page.waitForLoadState('load')
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
   @step('Перейти на страницу Производственного плана')
@@ -122,7 +154,7 @@ export class ProdPage {
     await this.page.locator(this.prodplanLink).click()
     const currentUrl = this.page.url();
     expect(currentUrl).toBe(base_url);
-    await this.page.waitForLoadState('load')
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
   @step('Пользователь загружает файлы')
@@ -161,6 +193,26 @@ async loadNotAllFiles() {
   }
 }
 
+@step('Пользователь загружает ошибочные файлы')
+  async loadErrorFiles() {
+    const files = fs.readdirSync(ErrorFilesDirectory).map(file => `${ErrorFilesDirectory}/${file}`);
+      
+    let filesUploaded = 0;
+    for (let i = 0; i < files.length; i++) {
+        const file_path = files[i];
+        if (file_path) {
+            await this.uploadFile(file_path);
+            console.log(`Загружается файл: ${file_path}`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            filesUploaded++;
+        } else {
+            throw new Error('Недостаточно файлов для загрузки');
+        }
+    }
+    if (filesUploaded < files.length) {
+        throw new Error('Не все файлы были загружены');
+    }
+}
   async uploadFile(file_path: string) { 
   const inputFile = await this.page.$(this.uploadField);
   if (inputFile) {
@@ -187,13 +239,14 @@ async loadNotAllFiles() {
   async clickToDownloadFiles() {
     await this.page.waitForSelector(this.modalDownloadWindow);
     await this.page.locator(this.downloadButton).click()
+    await this.page.waitForEvent('download');
   }
   
   @step('Пользователь обновляет файл Стоп-лист')
   async refreshBlackList() {
-    const files = fs.readdirSync(filesDirectory)
+    const files = fs.readdirSync(GoodFilesDirectory)
     const refreshFilePath = files.find(file => file === refreshFileName);
-    const fullFilePath: string = `${filesDirectory}/${refreshFilePath}`;
+    const fullFilePath: string = `${GoodFilesDirectory}/${refreshFilePath}`;
     const inputFile = await this.page.$(this.blackListRefreshButton);
     
     if (inputFile) {

@@ -14,8 +14,13 @@ blackListRefreshButton: '//div[@data-testid="test-id-file-menu-item-BLACK_LIST"]
 blackListRefreshToastSuccess: '//*[text()="Стоп лист обновлен"]',
 notAllFilesToastFail: '//*[text()="Не все файлы загружены"]',
 errorModalWindow: '//*[text()="Ошибка обработки файлов"]',
-};
+errorOKButton: '//button[@data-testid="test-id-button-see"]',
+errorNetworkWindow: '//*[text()="Нет сети"]',
+errorNetworkTryAgainButton: '//button[@data-testid="test-id-button-again"]',
+
+}
 
 export const refreshFileName: string = 'Стоп-лист.xlsx';
 export const GoodFilesDirectory: string = './data/good_files';
+export const ErrorFilesDirectory: string = './data/bad_files';
 export const base_url = 'https://splan-stage.samoletgroup.ru/production-plan/old-production-plan'
