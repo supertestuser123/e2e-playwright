@@ -1,6 +1,6 @@
 import { type Page } from '@playwright/test';
 import * as fs from 'fs'
-import { base_url, filesDirectory, locators, refreshFileName } from '../../helpers/constants/production_plan';
+import { base_url, GoodFilesDirectory, locators, refreshFileName } from '../../helpers/constants/production_plan';
 import { step } from '../../helpers/decorators/allure';
 import { expect } from '@playwright/test';
 
@@ -22,6 +22,7 @@ export class ProdPage {
   readonly blackListDownloadButton: Locator
   readonly blackListRefreshButton: Locator
   readonly blackListRefreshToastSuccess: Locator
+  readonly notAllFilesToastFail: Locator
 
   
 
@@ -39,6 +40,7 @@ export class ProdPage {
     this.blackListDownloadButton = locators.blackListDownloadButton
     this.blackListRefreshButton = locators.blackListRefreshButton
     this.blackListRefreshToastSuccess = locators.blackListRefreshToastSuccess
+    this.notAllFilesToastFail = locators.notAllFilesToastFail
 
   }
 
@@ -53,6 +55,11 @@ export class ProdPage {
     await this.loadFiles()
   }
 
+  @step('Загрузка НЕ ВСЕХ файлов')
+  async uploadNotAllFiles() {
+    await this.loadNotAllFiles()
+  }
+
   @step('Запуск расчета Производственного плана')
   async calculateProdPlan() {
     await this.clickToCalculate()
@@ -60,6 +67,7 @@ export class ProdPage {
 
   @step('Скачивание файлов перерасчета')
   async downloadFiles() {
+    await expect(this.page.locator(this.modalUploadWindow)).toBeVisible({timeout: 10000})
     await this.clickToDownloadFiles()
     await this.page.waitForEvent('download');
   } 
@@ -69,6 +77,12 @@ export class ProdPage {
     await this.clickToDropdown()
     await this.hoverToFile()
     await this.downloadBlackList()
+  }
+
+  @step('Пользователь получает красный тост с текстом "Не все файлы загружены"')
+  async checkNotAllFilesToast() {
+    await this.page.waitForSelector(this.notAllFilesToastFail);
+    await expect(this.page.locator(this.notAllFilesToastFail)).toBeVisible({timeout: 10000})
   }
 
   @step('Пользователь обновление файла Стоп-лист')
@@ -100,6 +114,7 @@ export class ProdPage {
     await this.page.goto(base_url);
     const currentTitle = await this.page.title();
     expect(currentTitle).toBe('S.Plan');
+    await this.page.waitForLoadState('load')
   }
 
   @step('Перейти на страницу Производственного плана')
@@ -107,12 +122,12 @@ export class ProdPage {
     await this.page.locator(this.prodplanLink).click()
     const currentUrl = this.page.url();
     expect(currentUrl).toBe(base_url);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await this.page.waitForLoadState('load')
   }
 
   @step('Пользователь загружает файлы')
   async loadFiles() {
-    const files = fs.readdirSync(filesDirectory).map(file => `${filesDirectory}/${file}`);
+    const files = fs.readdirSync(GoodFilesDirectory).map(file => `${GoodFilesDirectory}/${file}`);
       
     let filesUploaded = 0;
     for (let i = 0; i < files.length; i++) {
@@ -126,9 +141,24 @@ export class ProdPage {
             throw new Error('Недостаточно файлов для загрузки');
         }
     }
-    if (filesUploaded < 7) {
+    if (filesUploaded < files.length) {
         throw new Error('Не все файлы были загружены');
     }
+}
+@step('Пользователь загружает НЕ ВСЕ файлы')
+async loadNotAllFiles() {
+  const files = fs.readdirSync(GoodFilesDirectory).map(file => `${GoodFilesDirectory}/${file}`);
+  
+  let filesUploaded = 0;
+  for (let i = 0; i < Math.floor(files.length/2); i++) {
+      const file_path = files[i];
+      if (file_path) {
+          await this.uploadFile(file_path);
+          console.log(`Загружается файл: ${file_path}`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          filesUploaded++;
+      }
+  }
 }
 
   async uploadFile(file_path: string) { 
@@ -145,7 +175,6 @@ export class ProdPage {
   @step('Пользователь нажимает кнопку Запустить расчет')
   async clickToCalculate() {
     await this.page.locator(this.calculateButton).click()
-    await expect(this.page.locator(this.modalUploadWindow)).toBeVisible({timeout: 10000})
   }
 
   @step('Пользователь нажимает кнопку Скачать предыдущий расчет')
