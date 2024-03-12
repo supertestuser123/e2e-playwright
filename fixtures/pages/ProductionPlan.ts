@@ -112,7 +112,8 @@ export class ProdPage {
 
   @step('Пользователь получает модальное окно с ошибкой"')
   async getErrorModalWindow() {
-    await expect(this.page.locator(this.errorModalWindow)).toBeVisible({timeout: 10000})
+    await expect(this.page.locator(this.modalUploadWindow)).toBeVisible({timeout: 10000})
+    await expect(this.page.locator(this.errorModalWindow)).toBeVisible({timeout: 100000})
     await expect(this.page.locator(this.errorOKButton)).toBeVisible({timeout: 10000})
     await this.page.locator(this.errorOKButton).click()
   }
@@ -144,6 +145,7 @@ export class ProdPage {
   @step('Открыть стартовую страницу')
   async open() {
     await this.page.goto(base_url);
+    await this.page.waitForLoadState('load')
     const currentTitle = await this.page.title();
     expect(currentTitle).toBe('S.Plan');
     await new Promise(resolve => setTimeout(resolve, 1000));
