@@ -144,8 +144,7 @@ export class ProdPage {
 
   @step('Открыть стартовую страницу')
   async open() {
-    await this.page.goto(base_url);
-    await this.page.waitForLoadState('load')
+    await this.page.goto(base_url, {timeout: 10000, waitUntil:'networkidle'});
     const currentTitle = await this.page.title();
     expect(currentTitle).toBe('S.Plan');
     await new Promise(resolve => setTimeout(resolve, 1000));
