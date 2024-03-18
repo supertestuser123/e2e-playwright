@@ -13,7 +13,8 @@ const config = defineConfig({
     },
 ],
   use: { 
-    headless: false,       
+    headless: false,
+    
   },
   name: 'chromium',
 

@@ -23,4 +23,4 @@ errorNetworkTryAgainButton: '//button[@data-testid="test-id-button-again"]',
 export const refreshFileName: string = 'Стоп-лист.xlsx';
 export const GoodFilesDirectory: string = './data/good_files';
 export const ErrorFilesDirectory: string = './data/bad_files';
-export const base_url = 'https://splan-stage.samoletgroup.ru/production-plan/'
+export const base_url = 'https://splan-stage.samoletgroup.ru/production-plan/old-production-plan'

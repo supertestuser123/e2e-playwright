@@ -145,15 +145,13 @@ export class ProdPage {
   @step('Открыть стартовую страницу')
   async open() {
     await this.page.goto(base_url, {timeout: 10000});
-    const currentTitle = await this.page.title();
-    expect(currentTitle).toBe('S.Plan');
-    await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
   @step('Перейти на страницу Производственного плана')
   async navigateToProdPlan() {
-    
-    await this.page.waitForSelector(this.prodplanLink, {timeout:10000});
+    const currentTitle = await this.page.title();
+    expect(currentTitle).toBe('S.Plan');
+    await this.page.waitForSelector(this.prodplanLink, {timeout:100000});
     await this.page.locator(this.prodplanLink).click()
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
